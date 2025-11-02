@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <!-- Забезпечує правильне відображення на мобільних пристроях -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PetCare - Мобільний додаток</title>
+    
+    <!-- Підключення Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Підключення бібліотеки іконок Lucide -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <!-- Підключення шрифту Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Застосовуємо шрифт Inter до всього додатку */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Приховування смуги прокрутки для контейнера додатка */
+        .app-container::-webkit-scrollbar {
+            display: none;
+        }
+        .app-container {
+            -ms-overflow-style: none;  /* IE та Edge */
+            scrollbar-width: none;  /* Firefox */
+        }
+    </style>
+</head>
+<body class="bg-gray-200">
+
+    <!-- 
+      Контейнер, що імітує екран мобільного телефону. 
+      На великих екранах він буде центрований.
+    -->
+    <div class="max-w-md mx-auto min-h-screen bg-white shadow-2xl flex flex-col app-container">
+
+        <!-- ===== Верхня панель (Header) ===== -->
+        <!-- За замовчуванням прихована, поки користувач не увійшов -->
+        <header id="app-header" class="sticky top-0 bg-white border-b border-gray-200 z-10 hidden">
+            <div class="flex justify-between items-center p-4">
+                <h1 id="header-title" class="text-xl font-bold text-blue-600">PetCare</h1>
+                <!-- Оновлено onclick -->
+                <button onclick="showScreen('screen-settings')" class="text-gray-600">
+                    <i data-lucide="settings" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- ===== Основний контент (Main) ===== -->
+        <main class="flex-grow overflow-y-auto pb-20">
+            
+            <!-- 
+              Різні "екрани" або "вкладки" додатка.
+              Ми будемо показувати або приховувати їх за допомогою JavaScript.
+            -->
+
+            <!-- ===== Екран 0: Логін (За замовчуванням) ===== -->
+            <div id="screen-login" class="tab-content flex flex-col justify-center min-h-full p-8 space-y-6">
+                <div class="text-center">
+                    <i data-lucide="paw-print" class="w-16 h-16 text-blue-600 mx-auto mb-4"></i>
+                    <h2 class="text-3xl font-bold text-gray-800">Ласкаво просимо!</h2>
+                    <p class="text-gray-500">Увійдіть, щоб продовжити</p>
+                </div>
+                
+                <form class="space-y-4">
+                    <div>
+                        <label for="login-email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" id="login-email" value="user@petcare.com" class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label for="login-pass" class="block text-sm font-medium text-gray-700 mb-1">Пароль</label>
+                        <input type="password" id="login-pass" value="12345" class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <div class="pt-4">
+                        <!-- Кнопка-заглушка для входу -->
+                        <button type="button" onclick="loginStub()" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                            Увійти
+                        </button>
+                    </div>
+                </form>
+
+                <div class="text-center">
+                    <button onclick="showScreen('screen-register')" class="text-sm font-medium text-blue-600 hover:underline">
+                        Немає акаунту? Зареєструватися
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== Екран 0.5: Реєстрація (Приховано) ===== -->
+            <div id="screen-register" class="tab-content hidden flex flex-col justify-center min-h-full p-8 space-y-6">
+                <div class="text-center">
+                    <i data-lucide="clipboard-edit" class="w-16 h-16 text-blue-600 mx-auto mb-4"></i>
+                    <h2 class="text-3xl font-bold text-gray-800">Створити акаунт</h2>
+                    <p class="text-gray-500">Приєднуйтесь до PetCare</p>
+                </div>
+                
+                <form class="space-y-4">
+                    <div>
+                        <label for="reg-name" class="block text-sm font-medium text-gray-700 mb-1">Ваше ім'я</label>
+                        <input type="text" id="reg-name" placeholder="Іван" class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label for="reg-email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                        <input type="email" id="reg-email" placeholder="ivan@petcare.com" class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label for="reg-pass" class="block text-sm font-medium text-gray-700 mb-1">Пароль</label>
+                        <input type="password" id="reg-pass" placeholder="••••••••" class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <div class="pt-4">
+                        <!-- Кнопка-заглушка для реєстрації -->
+                        <button type="button" onclick="registerStub()" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                            Зареєструватися
+                        </button>
+                    </div>
+                </form>
+
+                <div class="text-center">
+                    <button onclick="showScreen('screen-login')" class="text-sm font-medium text-blue-600 hover:underline">
+                        Вже є акаунт? Увійти
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== Екран 1: Мої Улюбленці (Список) (Приховано) ===== -->
+            <div id="screen-my-pets" class="tab-content hidden p-4 space-y-4">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-bold text-gray-800">Мої Улюбленці</h2>
+                    <button onclick="showScreen('screen-add-pet')" class="bg-blue-600 text-white rounded-full p-2 hover:bg-blue-700 transition-colors">
+                        <i data-lucide="plus" class="w-6 h-6"></i>
+                    </button>
+                </div>
+
+                <!-- Картка Улюбленця 1 -->
+                <div onclick="showPetDetail('Барсик')" class="bg-white p-4 rounded-lg shadow-md border border-gray-100 cursor-pointer hover:shadow-lg transition-shadow">
+                    <div class="flex items-center space-x-4">
+                        <img src="https://placehold.co/80x80/E0F2FE/3B82F6?text=Барсик" 
+                             alt="Фото улюбленця" 
+                             class="w-20 h-20 rounded-full object-cover border-4 border-blue-100">
+                        <div class="flex-grow">
+                            <h3 class="text-xl font-semibold text-gray-900">Барсик</h3>
+                            <p class="text-sm text-gray-500">Шотландський висловухий</p>
+                            <!-- Іконки швидкого статусу -->
+                            <div class="flex space-x-3 mt-2 text-gray-600">
+                                <span class="flex items-center text-sm" title="Останній прийом їжі">
+                                    <i data-lucide="utensils" class="w-4 h-4 mr-1 text-green-500"></i> 2г тому
+                                </span>
+                                <span class="flex items-center text-sm" title="Остання прогулянка">
+                                    <i data-lucide="footprints" class="w-4 h-4 mr-1 text-yellow-500"></i> 1г тому
+                                </span>
+                            </div>
+                        </div>
+                        <i data-lucide="chevron-right" class="text-gray-400"></i>
+                    </div>
+                </div>
+
+                <!-- Картка Улюбленця 2 -->
+                <div onclick="showPetDetail('Рекс')" class="bg-white p-4 rounded-lg shadow-md border border-gray-100 cursor-pointer hover:shadow-lg transition-shadow">
+                    <div class="flex items-center space-x-4">
+                        <img src="https://placehold.co/80x80/FFFBEB/D97706?text=Рекс" 
+                             alt="Фото улюбленця" 
+                             class="w-20 h-20 rounded-full object-cover border-4 border-yellow-100">
+                        <div class="flex-grow">
+                            <h3 class="text-xl font-semibold text-gray-900">Рекс</h3>
+                            <p class="text-sm text-gray-500">Золотистий ретривер</p>
+                            <div class="flex space-x-3 mt-2 text-gray-600">
+                                <span class="flex items-center text-sm" title="Останній прийом їжі">
+                                    <i data-lucide="utensils" class="w-4 h-4 mr-1 text-gray-400"></i> 4г тому
+                                </span>
+                                <span class="flex items-center text-sm" title="Остання прогулянка">
+                                    <i data-lucide="footprints" class="w-4 h-4 mr-1 text-green-500"></i> 30хв тому
+                                </span>
+                            </div>
+                        </div>
+                        <i data-lucide="chevron-right" class="text-gray-400"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== Екран 2: Деталі Улюбленця (Приховано) ===== -->
+            <div id="screen-pet-detail" class="tab-content hidden p-4 space-y-4">
+                <!-- Кнопка Назад -->
+                <button onclick="showScreen('screen-my-pets')" class="flex items-center text-blue-600 font-medium mb-2">
+                    <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                    Назад до списку
+                </button>
+                
+                <!-- Інформація про улюбленця -->
+                <div class="flex flex-col items-center">
+                    <img id="detail-pet-img" src="https://placehold.co/120x120/E0F2FE/3B82F6?text=Барсик" 
+                         alt="Фото улюбленця" 
+                         class="w-32 h-32 rounded-full object-cover border-8 border-blue-100 shadow-lg">
+                    <h2 id="detail-pet-name" class="text-3xl font-bold text-gray-900 mt-4">Барсик</h2>
+                    <p class="text-base text-gray-500">Шотландський висловухий</p>
+                </div>
+
+                <!-- Блок статусу -->
+                <div class="bg-gray-50 p-4 rounded-lg shadow-inner space-y-3">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Поточний Статус</h3>
+                    <div class="flex items-center justify-between">
+                        <span class="flex items-center text-gray-700">
+                            <i data-lucide="utensils" class="w-5 h-5 mr-3 text-blue-500"></i>
+                            Останній прийом їжі:
+                        </span>
+                        <span class="font-medium text-gray-900">Сьогодні, 11:00</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="flex items-center text-gray-700">
+                            <i data-lucide="footprints" class="w-5 h-5 mr-3 text-blue-500"></i>
+                            Остання прогулянка:
+                        </span>
+                        <span class="font-medium text-gray-900">Сьогодні, 12:30</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="flex items-center text-gray-700">
+                            <i data-lucide="syringe" class="w-5 h-5 mr-3 text-blue-500"></i>
+                            Вакцинація (від сказу):
+                        </span>
+                        <span class="font-medium text-green-600">15.03.2025 (План)</span>
+                    </div>
+                </div>
+
+                <!-- Блок Планування -->
+                <div class="bg-gray-50 p-4 rounded-lg shadow-inner space-y-3">
+                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Планувальник</h3>
+                    <div class="flex items-center p-3 bg-white rounded-lg shadow-sm">
+                        <div class="p-2 bg-red-100 rounded-lg mr-3">
+                            <i data-lucide="stethoscope" class="w-5 h-5 text-red-600"></i>
+                        </div>
+                        <div>
+                            <p class="font-semibold text-gray-800">Візит до ветеринара</p>
+                            <p class="text-sm text-gray-600">28 жовтня, 14:00</p>
+                        </div>
+                    </div>
+                    <button class="w-full mt-2 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2">
+                        <i data-lucide="calendar-plus" class="w-5 h-5"></i>
+                        <span>Запланувати нову подію</span>
+                    </button>
+                </div>
+                
+                <!-- Кнопка Видалити -->
+                <div class="pt-4">
+                    <button class="w-full bg-red-50 text-red-600 py-3 rounded-lg font-semibold hover:bg-red-100 transition-colors flex items-center justify-center space-x-2">
+                        <i data-lucide="trash-2" class="w-5 h-5"></i>
+                        <span>Видалити улюбленця</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== Екран 3: Спільнота (Приховано) ===== -->
+            <div id="screen-community" class="tab-content hidden p-4">
+                <h2 class="text-2xl font-bold text-gray-800 mb-4">Спільнота PetCare</h2>
+                <p class="text-gray-600 mb-4">Дивіться улюбленців інших люблячих господарів.</p>
+
+                <!-- Стрічка спільноти -->
+                <div class="grid grid-cols-2 gap-4">
+                    <!-- Картка улюбленця зі спільноти -->
+                    <div class="bg-white rounded-lg shadow border border-gray-100 overflow-hidden">
+                        <img src="https://placehold.co/150x150/F3E8FF/A855F7?text=Луна" alt="Улюбленець" class="w-full h-32 object-cover">
+                        <div class="p-3">
+                            <h4 class="font-semibold text-gray-900">Луна</h4>
+                            <p class="text-sm text-gray-500">Господар: @anna_k</p>
+                        </div>
+                    </div>
+                    <!-- Картка улюбленця зі спільноти -->
+                    <div class="bg-white rounded-lg shadow border border-gray-100 overflow-hidden">
+                        <img src="https://placehold.co/150x150/ECFDF5/10B981?text=Чарлі" alt="Улюбленець" class="w-full h-32 object-cover">
+                        <div class="p-3">
+                            <h4 class="font-semibold text-gray-900">Чарлі</h4>
+                            <p class="text-sm text-gray-500">Господар: @mike_p</p>
+                        </div>
+                    </div>
+                    <!-- Картка улюбленця зі спільноти -->
+                    <div class="bg-white rounded-lg shadow border border-gray-100 overflow-hidden">
+                        <img src="https://placehold.co/150x150/FEF3C7/F59E0B?text=Дейзі" alt="Улюбленець" class="w-full h-32 object-cover">
+                        <div class="p-3">
+                            <h4 class="font-semibold text-gray-900">Дейзі</h4>
+                            <p class="text-sm text-gray-500">Господар: @elena_v</p>
+                        </div>
+                    </div>
+                    <!-- Картка улюбленця зі спільноти -->
+                    <div class="bg-white rounded-lg shadow border border-gray-100 overflow-hidden">
+                        <img src="https://placehold.co/150x150/DBEAFE/3B82F6?text=Бадді" alt="Улюбленець" class="w-full h-32 object-cover">
+                        <div class="p-3">
+                            <h4 class="font-semibold text-gray-900">Бадді</h4>
+                            <p class="text-sm text-gray-500">Господар: @alex_r</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== Екран 4: Додати Улюбленця (Приховано) ===== -->
+            <div id="screen-add-pet" class="tab-content hidden p-4 space-y-4">
+                <!-- Кнопка Назад -->
+                <button onclick="showScreen('screen-my-pets')" class="flex items-center text-blue-600 font-medium mb-2">
+                    <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                    Скасувати
+                </button>
+                <h2 class="text-2xl font-bold text-gray-800">Новий улюбленець</h2>
+                
+                <form class="space-y-4">
+                    <div class="flex justify-center">
+                        <button type="button" class="w-32 h-32 bg-gray-100 rounded-full flex flex-col items-center justify-center text-gray-500 border-2 border-dashed border-gray-300 hover:bg-gray-200">
+                            <i data-lucide="camera" class="w-8 h-8 mb-1"></i>
+                            <span class="text-sm">Фото</span>
+                        </button>
+                    </div>
+                    <div>
+                        <label for="pet-name" class="block text-sm font-medium text-gray-700 mb-1">Ім'я улюбленця</label>
+                        <input type="text" id="pet-name" placeholder="Наприклад, Барсик" class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label for="pet-breed" class="block text-sm font-medium text-gray-700 mb-1">Порода</label>
+                        <input type="text" id="pet-breed" placeholder="Наприклад, Шотландський висловухий" class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+                    <div>
+                        <label for="pet-dob" class="block text-sm font-medium text-gray-700 mb-1">Дата народження</label>
+                        <input type="date" id="pet-dob" class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    </div>
+
+                    <div class="pt-4">
+                        <button type="button" onclick="showScreen('screen-my-pets')" class="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors">
+                            Додати улюбленця
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- ===== Екран 5: Профіль (Приховано) ===== -->
+            <div id="screen-profile" class="tab-content hidden p-4 space-y-4">
+                <!-- Заголовок прибраний, оскільки він тепер у загальній шапці -->
+                
+                <!-- Інфо про користувача -->
+                <div class="flex flex-col items-center p-6 bg-gray-50 rounded-lg shadow-inner">
+                    <img src="https://placehold.co/100x100/DBEAFE/1E40AF?text=User" 
+                         alt="Аватар" 
+                         class="w-24 h-24 rounded-full object-cover border-4 border-blue-200 shadow-lg">
+                    <h3 id="profile-user-info" class="text-2xl font-semibold text-gray-900 mt-4">user@petcare.com</h3>
+                    <p class="text-sm text-gray-500">Приєднався: 25.10.2025</p>
+                    <button class="mt-4 w-full bg-blue-100 text-blue-700 py-2 rounded-lg font-semibold hover:bg-blue-200 transition-colors">
+                        Редагувати профіль
+                    </button>
+                </div>
+
+                <!-- Меню профілю -->
+                <div class="space-y-2 pt-4">
+                    <a href="#" class="flex items-center justify-between p-4 bg-white rounded-lg shadow-md border border-gray-100 hover:bg-gray-50">
+                        <span class="flex items-center text-gray-700 font-medium">
+                            <i data-lucide="bar-chart-3" class="w-5 h-5 mr-3 text-blue-500"></i>
+                            Моя статистика
+                        </span>
+                        <i data-lucide="chevron-right" class="text-gray-400"></i>
+                    </a>
+                    <a href="#" class="flex items-center justify-between p-4 bg-white rounded-lg shadow-md border border-gray-100 hover:bg-gray-50">
+                        <span class="flex items-center text-gray-700 font-medium">
+                            <i data-lucide="award" class="w-5 h-5 mr-3 text-yellow-500"></i>
+                            Досягнення
+                        </span>
+                        <i data-lucide="chevron-right" class="text-gray-400"></i>
+                    </a>
+                </div>
+
+                <!-- Кнопка Виходу -->
+                <div class="pt-6">
+                    <button onclick="logoutStub()" class="w-full bg-red-50 text-red-600 py-3 rounded-lg font-semibold hover:bg-red-100 transition-colors flex items-center justify-center space-x-2">
+                        <i data-lucide="log-out" class="w-5 h-5"></i>
+                        <span>Вийти з акаунту</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- ===== Екран 6: Налаштування (Приховано) ===== -->
+            <div id="screen-settings" class="tab-content hidden p-4 space-y-4">
+                <!-- Кнопка Назад (важливо для екрану, на який немає кнопки в навбарі) -->
+                <button onclick="showScreen('screen-my-pets')" class="flex items-center text-blue-600 font-medium mb-2">
+                    <i data-lucide="chevron-left" class="w-5 h-5"></i>
+                    Назад
+                </button>
+                <h2 class="text-2xl font-bold text-gray-800">Налаштування</h2>
+
+                <div class="space-y-4 pt-4">
+                    <!-- Блок 1: Сповіщення -->
+                    <div class="bg-gray-50 p-4 rounded-lg shadow-inner">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-3">Сповіщення</h3>
+                        <div class="flex items-center justify-between">
+                            <label for="push-notifications" class="text-gray-700">Push-сповіщення</label>
+                            <!-- Fake toggle -->
+                            <div class="w-12 h-6 bg-green-400 rounded-full p-1 flex items-center cursor-pointer">
+                                <div class="w-4 h-4 bg-white rounded-full shadow-md transform translate-x-6"></div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between mt-3">
+                            <label for="email-notifications" class="text-gray-700">Email-розсилка</label>
+                            <!-- Fake toggle (off) -->
+                            <div class="w-12 h-6 bg-gray-300 rounded-full p-1 flex items-center cursor-pointer">
+                                <div class="w-4 h-4 bg-white rounded-full shadow-md transform translate-x-0"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Блок 2: Оформлення -->
+                    <div class="bg-gray-50 p-4 rounded-lg shadow-inner">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-3">Оформлення</h3>
+                        <div class="flex items-center justify-between">
+                            <label for="dark-mode" class="text-gray-700">Темна тема</label>
+                            <!-- Fake toggle (off) -->
+                            <div class="w-12 h-6 bg-gray-300 rounded-full p-1 flex items-center cursor-pointer">
+                                <div class="w-4 h-4 bg-white rounded-full shadow-md transform translate-x-0"></div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Блок 3: Мова -->
+                    <div class="bg-gray-50 p-4 rounded-lg shadow-inner">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-3">Мова</h3>
+                        <select class="w-full px-3 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option>Українська</option>
+                            <option>English</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- ===== Нижня панель навігації (Footer) ===== -->
+        <!-- Додано ID та клас hidden -->
+        <footer id="app-footer" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-white border-t border-gray-200 z-10 hidden">
+            <nav class="flex justify-around items-center h-16">
+                <!-- 
+                  Кнопки навігації. Клас 'text-blue-600' - активна вкладка.
+                  Клас 'text-gray-500' - неактивна.
+                -->
+                <button onclick="showScreen('screen-my-pets')" id="nav-my-pets" class="nav-button flex flex-col items-center justify-center text-blue-600 w-full hover:bg-blue-50 transition-colors p-2 rounded-lg">
+                    <i data-lucide="home" class="w-6 h-6 mb-1"></i>
+                    <span class="text-xs font-medium">Головна</span>
+                </button>
+                
+                <button onclick="showScreen('screen-community')" id="nav-community" class="nav-button flex flex-col items-center justify-center text-gray-500 w-full hover:bg-blue-50 transition-colors p-2 rounded-lg">
+                    <i data-lucide="users" class="w-6 h-6 mb-1"></i>
+                    <span class="text-xs font-medium">Спільнота</span>
+                </button>
+                
+                <!-- Оновлено onclick -->
+                <button onclick="showScreen('screen-profile')" id="nav-profile" class="nav-button flex flex-col items-center justify-center text-gray-500 w-full hover:bg-blue-50 transition-colors p-2 rounded-lg">
+                    <i data-lucide="user" class="w-6 h-6 mb-1"></i>
+                    <span class="text-xs font-medium">Профіль</span>
+                </button>
+            </nav>
+        </footer>
+    </div>
+
+    <script>
+        // Активуємо всі іконки Lucide на сторінці
+        lucide.createIcons();
+
+        // Мок-дані для улюбленців
+        const petData = {
+            'Барсик': {
+                name: 'Барсик',
+                breed: 'Шотландський висловухий',
+                img: 'https://placehold.co/120x120/E0F2FE/3B82F6?text=Барсик'
+            },
+            'Рекс': {
+                name: 'Рекс',
+                breed: 'Золотистий ретривер',
+                img: 'https://placehold.co/120x120/FFFBEB/D97706?text=Рекс'
+            }
+        };
+
+        // ===== Нові функції-заглушки для авторизації =====
+        function loginStub() {
+            // Тут могла б бути реальна перевірка логіна та пароля
+            console.log("Спроба входу (заглушка)...");
+            // Оновимо email в профілі
+            const email = document.getElementById('login-email').value || 'user@petcare.com';
+            document.getElementById('profile-user-info').innerText = email;
+            // Імітуємо успішний вхід і переходимо на головний екран
+            showScreen('screen-my-pets');
+        }
+
+        function registerStub() {
+            // Тут могла б бути реальна реєстрація користувача
+            console.log("Спроба реєстрації (заглушка)...");
+            // Оновимо email в профілі
+            const email = document.getElementById('reg-email').value || 'new-user@petcare.com';
+            document.getElementById('profile-user-info').innerText = email;
+            // Імітуємо успішну реєстрацію і відразу входимо
+            showScreen('screen-my-pets');
+        }
+
+        function logoutStub() {
+            console.log("Вихід із системи...");
+            showScreen('screen-login');
+        }
+        // ===================================================
+
+        // Функція для перемикання "екранів" (вкладок)
+        function showScreen(screenId) {
+            // Ховаємо всі екрани
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+
+            // Показуємо потрібний екран
+            const activeScreen = document.getElementById(screenId);
+            if (activeScreen) {
+                activeScreen.classList.remove('hidden');
+            }
+
+            // --- Оновлена логіка показу Header та Footer ---
+            const headerTitle = document.getElementById('header-title');
+            const appHeader = document.getElementById('app-header');
+            const appFooter = document.getElementById('app-footer');
+            
+            // Якщо це екран логіну або реєстрації, ховаємо навігацію
+            if (screenId === 'screen-login' || screenId === 'screen-register') {
+                appHeader.classList.add('hidden');
+                appFooter.classList.add('hidden');
+            } else {
+                // Інакше ми в додатку, показуємо футер
+                appFooter.classList.remove('hidden');
+                
+                // Показуємо хедер, АЛЕ ховаємо його на спец. екранах (деталі, додавання, налаштування)
+                if (screenId === 'screen-pet-detail' || screenId === 'screen-add-pet' || screenId === 'screen-settings') {
+                    appHeader.classList.add('hidden');
+                } else {
+                    appHeader.classList.remove('hidden');
+                }
+
+                // Оновлюємо заголовок хедера для основних екранів
+                if (screenId === 'screen-my-pets') {
+                    headerTitle.innerText = 'PetCare';
+                } else if (screenId === 'screen-community') {
+                    headerTitle.innerText = 'Спільнота';
+                } else if (screenId === 'screen-profile') {
+                    headerTitle.innerText = 'Мій Профіль';
+                }
+            }
+            // --- Кінець оновленої логіки ---
+
+            // Оновлюємо активний стан кнопок навігації
+            document.querySelectorAll('.nav-button').forEach(button => {
+                button.classList.remove('text-blue-600');
+                button.classList.add('text-gray-500');
+            });
+            
+            if (screenId === 'screen-my-pets') {
+                document.getElementById('nav-my-pets').classList.add('text-blue-600');
+                document.getElementById('nav-my-pets').classList.remove('text-gray-500');
+            } else if (screenId === 'screen-community') {
+                document.getElementById('nav-community').classList.add('text-blue-600');
+                document.getElementById('nav-community').classList.remove('text-gray-500');
+            } else if (screenId === 'screen-profile') {
+                document.getElementById('nav-profile').classList.add('text-blue-600');
+                document.getElementById('nav-profile').classList.remove('text-gray-500');
+            }
+            
+            // Прокручуємо наверх при зміні екрану
+            const mainElement = document.querySelector('main');
+            if (mainElement) {
+                mainElement.scrollTop = 0;
+            }
+        }
+
+        // Функція для показу деталей улюбленця
+        function showPetDetail(petName) {
+            const pet = petData[petName];
+            if (!pet) return;
+
+            // Заповнюємо дані на екрані деталей
+            document.getElementById('detail-pet-name').innerText = pet.name;
+            document.getElementById('detail-pet-img').src = pet.img;
+            
+            // Переключаємося на екран деталей
+            showScreen('screen-pet-detail');
+        }
+
+        // Встановлюємо початковий екран
+        document.addEventListener('DOMContentLoaded', () => {
+            // Тепер за замовчуванням показуємо екран логіну
+            showScreen('screen-login');
+        });
+    </script>
+
+</body>
+</html>
+
