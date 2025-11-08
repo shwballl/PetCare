@@ -13,7 +13,7 @@ import { Pet } from './pets/pets.entity';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      envFilePath: '.env',
+      envFilePath: './.env',
       isGlobal: true,
     }),
 

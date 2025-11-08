@@ -1,0 +1,77 @@
+version: "3.9"
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: petcare
+      POSTGRES_USER: petcare
+      POSTGRES_PASSWORD: petcare
+    ports:
+      - "5432:5432" 
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - app-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U petcare"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      target: runner 
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: petcare
+      DB_PASSWORD: petcare
+      DB_NAME: petcare
+      DATABASE_URL: postgres://petcare:petcare@db:5432/petcare
+      JWT_SECRET: ${JWT_SECRET}
+    ports:
+      - "3000:3000"
+    networks:
+      - app-net
+    restart: unless-stopped 
+    healthcheck:
+      test: ["CMD", "node", "dist/main.js", "--help"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build:
+      context: ./frontend
+    depends_on:
+      - backend
+    environment:
+      EXPO_PUBLIC_API_URL: http://backend:3000
+      REACT_NATIVE_PACKAGER_HOSTNAME: ${REACT_NATIVE_PACKAGER_HOSTNAME}
+    ports:
+      - "19000:19000"
+      - "19001:19001"
+      - "19002:19002"
+      - "8081:8081"
+    networks:
+      - app-net
+    restart: unless-stopped
+    stdin_open: true
+    tty: true
+    command: ["npm", "run", "start"] 
+
+networks:
+  app-net:
+    driver: bridge
+
+volumes:
+  db-data:
+    driver: local
+
