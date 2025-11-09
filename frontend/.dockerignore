@@ -1,0 +1,56 @@
+# Node.js specific files and directories
+node_modules/
+npm-debug.log
+yarn-debug.log
+.yarn/
+.pnp/
+.pnp.cjs
+
+# React Native specific files and directories
+android/build/
+ios/build/
+android/.gradle/
+ios/.xcode.env.local
+ios/Pods/
+ios/.symlinks/
+ios/DerivedData/
+ios/build/
+ios/fastlane/
+ios/.bundle/
+ios/Carthage/
+ios/vendor/
+
+# Environment variables and configuration files
+.env
+.env.*.local
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Git related files
+.git/
+.gitignore
+
+# IDE and editor specific files
+.vscode/
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Build output directories
+build/
+dist/
+out/
+tmp/
+
+# Logs and temporary files
+*.log
+*.tmp
+temp/
+
+# Other common exclusions
+coverage/
+.DS_Store
+Thumbs.db

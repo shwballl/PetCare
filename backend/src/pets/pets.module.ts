@@ -1,16 +1,18 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { PetsService } from './pets.service';
 import { PetsController } from './pets.controller';
 import { Pet } from './pets.entity';
 import { AuthModule } from 'src/auth/auth.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { EventsModule } from 'src/events/events.module';
 
 @Module({
   providers: [PetsService],
   controllers: [PetsController],
   imports: [
       TypeOrmModule.forFeature([Pet]),
-      AuthModule
+      AuthModule,
+      EventsModule,
   ],
   exports: [PetsService],
 })

@@ -1,9 +1,10 @@
-import { Controller, forwardRef, Get, Inject, Put, Req, UnauthorizedException, UseGuards } from '@nestjs/common';
+import { Controller, forwardRef, Get, Inject, Put, Req, UnauthorizedException, UseGuards, UsePipes } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthModule } from 'src/auth/auth.module';
 import { AuthService } from 'src/auth/auth.service';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/jwt-auth.guard';
+import { ValidationPipe } from 'src/pipes/validations.pipe';
 
 @Controller('users')
 export class UsersController {
@@ -55,6 +56,7 @@ export class UsersController {
         },
     })
     @UseGuards(JwtAuthGuard)
+    @UsePipes(ValidationPipe)
     @Put('me')
     async updateUser(@Req() request: Request){
         const user = await this.authService.getUserFromToken(request.headers['authorization']);

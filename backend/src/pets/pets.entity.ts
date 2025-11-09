@@ -1,5 +1,6 @@
 import { User } from "src/users/users.entity";
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Event } from "src/events/events.entity";
 
 @Entity('pets')
 export class Pet{
@@ -17,4 +18,7 @@ export class Pet{
     @ManyToOne(() => User, user => user.pets)
     @JoinColumn({ name: 'ownerId' })
     owner: User;
+
+    @OneToMany(() => Event, event => event.pet)
+    events: Event[];
 }

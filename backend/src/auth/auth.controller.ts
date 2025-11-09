@@ -1,7 +1,8 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Post, UsePipes } from '@nestjs/common';
 import { UserCreateDto, UserLoginDto } from 'src/users/dto/user-create.dto';
 import { AuthService } from './auth.service';
 import { ApiBody, ApiOperation, ApiResponse, ApiSchema } from '@nestjs/swagger';
+import { ValidationPipe } from 'src/pipes/validations.pipe';
 
 @Controller('auth')
 export class AuthController {
@@ -24,6 +25,7 @@ export class AuthController {
             required: ['email', 'password', 'username', 'name'],
         },
     })
+    @UsePipes(ValidationPipe)
     @Post('register')
     register(@Body() userDTO: UserCreateDto) {
         return this.authService.register(userDTO);
@@ -44,6 +46,7 @@ export class AuthController {
             required: ['email', 'password'],
         },
     })
+    @UsePipes(ValidationPipe)
     @Post('login')
     login(@Body() userDTO: UserLoginDto) {
         return this.authService.login(userDTO);

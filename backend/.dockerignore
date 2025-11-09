@@ -1,0 +1,36 @@
+# Node modules
+node_modules
+
+# Build artifacts
+dist
+build
+.tsbuildinfo
+
+# Configuration files
+.env
+.env.*
+*.env
+
+# Git-related files
+.git
+.gitignore
+
+# Editor/IDE specific files
+.vscode
+.idea
+
+# Log files
+*.log
+logs/
+
+# Test files (if not needed in production image)
+src/**/*.spec.ts
+src/**/*.e2e-spec.ts
+test/
+
+# Other temporary or unnecessary files
+tmp/
+coverage/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

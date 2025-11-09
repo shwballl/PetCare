@@ -9,6 +9,7 @@ import { UsersModule } from './users/users.module';
 import { UsersController } from './users/users.controller';
 import { User } from './users/users.entity';
 import { Pet } from './pets/pets.entity';
+import { Event } from './events/events.entity';
 
 @Module({
   imports: [
@@ -24,7 +25,7 @@ import { Pet } from './pets/pets.entity';
       username: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
-      entities: [User, Pet],
+      entities: [User, Pet, Event],
       synchronize: true,
     }),
 
