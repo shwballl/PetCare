@@ -7,10 +7,11 @@ import {
   ScrollView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { authAPI } from '../services/api';
 
 export default function ProfileScreen({ navigation }) {
-  const handleLogout = () => {
-    console.log('Вихід з системи...');
+  const handleLogout = async () => {
+    await authAPI.logout();
     navigation.replace('Login');
   };
 

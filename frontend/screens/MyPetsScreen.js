@@ -1,15 +1,20 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { petData } from '../data/petData';
+import { petsAPI } from '../services/api';
 
 export default function MyPetsScreen({ navigation }) {
+  const [pets, setPets] = useState([]);
+  const [loading, setLoading] = useState(true);
+
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -23,6 +28,40 @@ export default function MyPetsScreen({ navigation }) {
     });
   }, [navigation]);
 
+  useEffect(() => {
+    loadPets();
+  }, []);
+
+  // Перезавантаження при поверненні на екран
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      loadPets();
+    });
+    return unsubscribe;
+  }, [navigation]);
+
+  const loadPets = async () => {
+    try {
+      setLoading(true);
+      const data = await petsAPI.getAllPets();
+      setPets(data);
+    } catch (error) {
+      console.error('Помилка завантаження:', error);
+      Alert.alert('Помилка', 'Не вдалося завантажити улюбленців');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <ActivityIndicator size="large" color="#2563EB" />
+        <Text style={styles.loadingText}>Завантаження...</Text>
+      </View>
+    );
+  }
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
@@ -35,28 +74,64 @@ export default function MyPetsScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
-      <PetCard
-        name="Барсик"
-        breed="Шотландський висловухий"
-        lastFed="2г тому"
-        lastWalk="1г тому"
-        color="#E0F2FE"
-        onPress={() => navigation.navigate('PetDetail', { petName: 'Барсик' })}
-      />
-
-      <PetCard
-        name="Рекс"
-        breed="Золотистий ретривер"
-        lastFed="4г тому"
-        lastWalk="30хв тому"
-        color="#FFFBEB"
-        onPress={() => navigation.navigate('PetDetail', { petName: 'Рекс' })}
-      />
+      {pets.length === 0 ? (
+        <View style={styles.emptyContainer}>
+          <Ionicons name="paw-outline" size={64} color="#D1D5DB" />
+          <Text style={styles.emptyText}>Поки немає улюбленців</Text>
+          <Text style={styles.emptySubtext}>
+            Додайте свого першого улюбленця!
+          </Text>
+        </View>
+      ) : (
+        pets.map((pet) => (
+          <PetCard
+            key={pet.id}
+            id={pet.id}
+            name={pet.name}
+            breed={pet.type}
+            birthDate={pet.birthDate}
+            color={getColorForPet(pet.id)}
+            onPress={() =>
+              navigation.navigate('PetDetail', { petId: pet.id })
+            }
+          />
+        ))
+      )}
     </ScrollView>
   );
 }
 
-function PetCard({ name, breed, lastFed, lastWalk, color, onPress }) {
+// Функція для генерації кольорів
+function getColorForPet(id) {
+  const colors = [
+    '#E0F2FE',
+    '#FFFBEB',
+    '#F3E8FF',
+    '#ECFDF5',
+    '#FEF3C7',
+    '#DBEAFE',
+  ];
+  return colors[id % colors.length];
+}
+
+function PetCard({ id, name, breed, birthDate, color, onPress }) {
+  // Розрахунок віку
+  const calculateAge = (birthDate) => {
+    if (!birthDate) return 'Не вказано';
+    const birth = new Date(birthDate);
+    const now = new Date();
+    const years = now.getFullYear() - birth.getFullYear();
+    const months = now.getMonth() - birth.getMonth();
+    
+    if (years > 0) {
+      return `${years} ${years === 1 ? 'рік' : years < 5 ? 'роки' : 'років'}`;
+    } else if (months > 0) {
+      return `${months} ${months === 1 ? 'місяць' : months < 5 ? 'місяці' : 'місяців'}`;
+    } else {
+      return 'Менше місяця';
+    }
+  };
+
   return (
     <TouchableOpacity style={styles.card} onPress={onPress}>
       <View style={[styles.avatar, { backgroundColor: color }]}>
@@ -67,12 +142,8 @@ function PetCard({ name, breed, lastFed, lastWalk, color, onPress }) {
         <Text style={styles.petBreed}>{breed}</Text>
         <View style={styles.statusRow}>
           <View style={styles.status}>
-            <Ionicons name="restaurant" size={16} color="#10B981" />
-            <Text style={styles.statusText}>{lastFed}</Text>
-          </View>
-          <View style={styles.status}>
-            <Ionicons name="footsteps" size={16} color="#F59E0B" />
-            <Text style={styles.statusText}>{lastWalk}</Text>
+            <Ionicons name="calendar-outline" size={16} color="#6B7280" />
+            <Text style={styles.statusText}>{calculateAge(birthDate)}</Text>
           </View>
         </View>
       </View>
@@ -85,6 +156,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F9FAFB',
+  },
+  centerContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  loadingText: {
+    marginTop: 12,
+    fontSize: 16,
+    color: '#6B7280',
   },
   header: {
     flexDirection: 'row',
@@ -104,6 +184,24 @@ const styles = StyleSheet.create({
     borderRadius: 24,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 64,
+    paddingHorizontal: 32,
+  },
+  emptyText: {
+    fontSize: 18,
+    fontWeight: '600',
+    color: '#1F2937',
+    marginTop: 16,
+  },
+  emptySubtext: {
+    fontSize: 14,
+    color: '#6B7280',
+    marginTop: 8,
+    textAlign: 'center',
   },
   card: {
     flexDirection: 'row',

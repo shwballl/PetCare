@@ -1,8 +1,9 @@
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Замініть на адресу вашого бекенду
-const API_URL = 'http://localhost:3000/api'; // Для розробки
-// const API_URL = 'https://your-backend.com/api'; // Для продакшну
+// Налаштування API
+const API_URL = 'http://192.168.1.107:3000'; // Для розробки
+// const API_URL = 'https://your-backend.com'; // Для продакшну
 
 const api = axios.create({
   baseURL: API_URL,
@@ -12,37 +13,12 @@ const api = axios.create({
   },
 });
 
-// Interceptor для додавання токену до кожного запиту
-api.interceptors.request.use(
-  async (config) => {
-    const token = await getToken(); // Отримуємо токен з AsyncStorage
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
-// Interceptor для обробки помилок
-api.interceptors.response.use(
-  (response) => response,
-  async (error) => {
-    if (error.response?.status === 401) {
-      // Токен невалідний, перенаправляємо на логін
-      await removeToken();
-      // Тут можна додати навігацію до екрану логіну
-    }
-    return Promise.reject(error);
-  }
-);
-
-// Функції для роботи з токеном
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
+// Ключ для збереження токену
 const TOKEN_KEY = 'auth_token';
+
+// ============================================
+// Функції для роботи з токеном
+// ============================================
 
 export const saveToken = async (token) => {
   try {
@@ -69,4 +45,243 @@ export const removeToken = async () => {
   }
 };
 
+// ============================================
+// Interceptors
+// ============================================
+
+// Додаємо токен до кожного запиту
+api.interceptors.request.use(
+  async (config) => {
+    const token = await getToken();
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
+// Обробка помилок
+api.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    if (error.response?.status === 401) {
+      await removeToken();
+      // Тут можна додати навігацію до екрану логіну
+    }
+    return Promise.reject(error);
+  }
+);
+
+// ============================================
+// AUTH API - Автентифікація
+// ============================================
+
+export const authAPI = {
+  // Вхід в систему
+  login: async (email, password) => {
+    try {
+      const response = await api.post('/auth/login', { email, password });
+      if (response.data.token) {
+        await saveToken(response.data.token);
+      }
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error;
+    }
+  },
+
+  // Реєстрація
+  register: async (email, password, username, name) => {
+    try {
+      const response = await api.post('/auth/register', {
+        email,
+        password,
+        username,
+        name,
+      });
+      if (response.data.token) {
+        await saveToken(response.data.token);
+      }
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error;
+    }
+  },
+
+  // Вихід з системи
+  logout: async () => {
+    await removeToken();
+  },
+};
+
+// ============================================
+// USER API - Користувачі
+// ============================================
+
+export const userAPI = {
+  // Отримати профіль поточного користувача
+  getProfile: async () => {
+    try {
+      const response = await api.get('/users/me');
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error;
+    }
+  },
+
+  // Оновити профіль
+  updateProfile: async (name, email, username) => {
+    try {
+      const response = await api.post('/users/me', {
+        name,
+        email,
+        username,
+      });
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error;
+    }
+  },
+};
+
+// ============================================
+// PETS API - Улюбленці
+// ============================================
+
+export const petsAPI = {
+  // Отримати всіх улюбленців користувача
+  getAllPets: async () => {
+    try {
+      const response = await api.get('/pets');
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error;
+    }
+  },
+
+  // Отримати улюбленця за ID
+  getPetById: async (petId) => {
+    try {
+      const response = await api.get(`/pets/${petId}`);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error;
+    }
+  },
+
+  // Додати нового улюбленця
+  addPet: async (name, type, birthDate) => {
+    try {
+      const response = await api.post('/pets', {
+        name,
+        type,
+        birthDate,
+      });
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error;
+    }
+  },
+
+  // Оновити улюбленця
+  updatePet: async (petId, name, type, birthDate) => {
+    try {
+      const response = await api.put(`/pets/${petId}`, {
+        name,
+        type,
+        birthDate,
+      });
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error;
+    }
+  },
+
+  // Видалити улюбленця
+  deletePet: async (petId) => {
+    try {
+      const response = await api.delete(`/pets/${petId}`);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error;
+    }
+  },
+};
+
+// ============================================
+// EVENTS API - Події
+// ============================================
+
+export const eventsAPI = {
+  // Отримати події для улюбленця
+  getEventsForPet: async (petId) => {
+    try {
+      const response = await api.get(`/events/${petId}`);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error;
+    }
+  },
+
+  // Додати нову подію
+  addEvent: async (name, date, checked, details, petId) => {
+    try {
+      const response = await api.post('/events', {
+        name,
+        date,
+        checked,
+        details,
+        petId,
+      });
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error;
+    }
+  },
+
+  // Оновити подію
+  updateEvent: async (eventId, name, date, details) => {
+    try {
+      const response = await api.put(`/events/${eventId}`, {
+        name,
+        date,
+        details,
+      });
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error;
+    }
+  },
+
+  // Видалити подію
+  deleteEvent: async (eventId) => {
+    try {
+      const response = await api.delete(`/events/${eventId}`);
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error;
+    }
+  },
+};
+
+// ============================================
+// COMMUNITY API - Спільнота
+// ============================================
+
+export const communityAPI = {
+  // Отримати стрічку спільноти
+  getCommunityFeed: async () => {
+    try {
+      const response = await api.get('/community/feed');
+      return response.data;
+    } catch (error) {
+      throw error.response?.data || error;
+    }
+  },
+};
+
+// Експортуємо axios instance для можливості додаткових запитів
 export default api;

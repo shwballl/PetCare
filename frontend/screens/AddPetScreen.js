@@ -8,15 +8,22 @@ import {
   ScrollView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { petsAPI } from '../services/api';
 
 export default function AddPetScreen({ navigation }) {
   const [name, setName] = useState('');
   const [breed, setBreed] = useState('');
   const [dob, setDob] = useState('');
 
-  const handleAddPet = () => {
-    console.log('Додавання улюбленця...');
-    navigation.goBack();
+  const handleAddPet = async () => {
+    try {
+      await petsAPI.addPet(name, breed, dob);
+      Alert.alert('Успіх', 'Улюбленця додано!');
+      navigation.goBack();
+    } catch (error) {
+      console.error('Помилка додавання:', error);
+      Alert.alert('Помилка', 'Не вдалося додати улюбленця');
+    }
   };
 
   return (

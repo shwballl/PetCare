@@ -9,15 +9,23 @@ import {
   Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { authAPI } from '../services/api';
 
 export default function RegisterScreen({ navigation }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleRegister = () => {
-    console.log('Спроба реєстрації...');
-    navigation.replace('MainApp');
+
+  const handleRegister = async () => {
+    try {
+      const data = await authAPI.register(email, password, name, name);
+      console.log('Успішна реєстрація:', data);
+      navigation.replace('MainApp');
+    } catch (error) {
+      console.error('Помилка реєстрації:', error);
+      Alert.alert('Помилка', 'Не вдалося зареєструватися');
+    }
   };
 
   return (

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { authAPI } from '../services/api';
 import {
   View,
   Text,
@@ -14,9 +15,15 @@ export default function LoginScreen({ navigation }) {
   const [email, setEmail] = useState('user@petcare.com');
   const [password, setPassword] = useState('12345');
 
-  const handleLogin = () => {
-    console.log('Спроба входу...');
+  const handleLogin = async () => {
+  try {
+    const data = await authAPI.login(email, password);
+    console.log('Успішний вхід:', data);
     navigation.replace('MainApp');
+  } catch (error) {
+    console.error('Помилка входу:', error);
+    Alert.alert('Помилка', 'Невірний email або пароль');
+  }
   };
 
   return (
