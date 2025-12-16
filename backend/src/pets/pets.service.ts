@@ -29,12 +29,11 @@ export class PetsService {
     }
 
     async getPetById(petId: number): Promise<Pet | null> {
-        return this.petRepository.findOneBy({ id: petId });
+        return this.petRepository.findOne({ where: { id: petId }, relations: ['owner'] });
     }
 
     async updatePet(petId: number, petData: Partial<UpdatePetDto>): Promise<Pet> {
-        const pet = await this.petRepository.findOneBy({ id: petId });
-
+        const pet = await this.petRepository.findOne({ where: { id: petId }, relations: ['owner'] });
         if (!pet) {
             throw new Error(`Pet with ID ${petId} not found`);
         }

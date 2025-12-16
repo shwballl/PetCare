@@ -2,7 +2,8 @@ import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Налаштування API
-const API_URL = 'http://192.168.1.107:3000'; // Для розробки
+// ⚠️ Переконайтеся, що IP-адреса правильна для вашої мережі
+const API_URL = 'http://192.168.1.107:3000'; 
 // const API_URL = 'https://your-backend.com'; // Для продакшну
 
 const api = axios.create({
@@ -63,13 +64,13 @@ api.interceptors.request.use(
   }
 );
 
-// Обробка помилок
+// Обробка помилок (автоматичний вихід при 401)
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     if (error.response?.status === 401) {
       await removeToken();
-      // Тут можна додати навігацію до екрану логіну
+      // Тут можна додати логіку глобальної навігації на логін, якщо потрібно
     }
     return Promise.reject(error);
   }
@@ -123,6 +124,7 @@ export const authAPI = {
 
 export const userAPI = {
   // Отримати профіль поточного користувача
+  // Використовуйте цю функцію в ProfileScreen
   getProfile: async () => {
     try {
       const response = await api.get('/users/me');
@@ -133,13 +135,11 @@ export const userAPI = {
   },
 
   // Оновити профіль
-  updateProfile: async (name, email, username) => {
+  // data — це об'єкт, наприклад: { name: "Нове ім'я" }
+  updateProfile: async (data) => {
     try {
-      const response = await api.post('/users/me', {
-        name,
-        email,
-        username,
-      });
+      // 🛠️ ВИПРАВЛЕНО: Використовуємо PUT замість POST
+      const response = await api.put('/users/me', data);
       return response.data;
     } catch (error) {
       throw error.response?.data || error;

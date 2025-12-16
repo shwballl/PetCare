@@ -1,29 +1,91 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  ActivityIndicator, 
+  Alert,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { authAPI } from '../services/api';
+// 👇 1. Додаємо userAPI до імпорту
+import { authAPI, userAPI } from '../services/api'; 
 
 export default function ProfileScreen({ navigation }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Додаємо підписку на подію 'focus' для оновлення даних
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      loadUserProfile(); 
+    });
+    loadUserProfile();
+    return unsubscribe;
+  }, [navigation]);
+
+  const loadUserProfile = async () => {
+    try {
+      setLoading(true);
+      // 👇 2. Використовуємо правильну функцію з userAPI
+      const userData = await userAPI.getProfile(); 
+      setUser(userData);
+    } catch (error) {
+      console.error('Помилка завантаження профілю:', error);
+      Alert.alert('Помилка', 'Не вдалося завантажити дані профілю');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleLogout = async () => {
     await authAPI.logout();
     navigation.replace('Login');
   };
+  
+  if (loading) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <ActivityIndicator size="large" color="#2563EB" />
+      </View>
+    );
+  }
+
+  if (!user) {
+    return (
+      <View style={[styles.container, styles.centerContent]}>
+        <Text>Не вдалося завантажити дані користувача.</Text>
+      </View>
+    );
+  }
+  
+  const formatJoinDate = (isoDate) => {
+    return new Date(isoDate).toLocaleDateString('uk-UA'); 
+  };
+  
+  const getAvatarLetter = (user) => {
+    const source = user.name || user.email || 'U';
+    return source[0].toUpperCase();
+  };
+
 
   return (
     <ScrollView style={styles.container}>
       <View style={styles.profileHeader}>
         <View style={styles.avatar}>
-          <Text style={styles.avatarText}>U</Text>
+          <Text style={styles.avatarText}>{getAvatarLetter(user)}</Text>
         </View>
-        <Text style={styles.email}>user@petcare.com</Text>
-        <Text style={styles.joinDate}>Приєднався: 25.10.2025</Text>
-        <TouchableOpacity style={styles.editButton}>
+        <Text style={styles.email}>{user.email}</Text>
+        <Text style={styles.joinDate}>
+          Приєднався: {formatJoinDate(user.createdAt)}
+        </Text>
+        <TouchableOpacity 
+          style={styles.editButton} 
+          onPress={() => 
+            navigation.navigate('EditProfile', { user: user })
+          }
+        >
           <Text style={styles.editButtonText}>Редагувати профіль</Text>
         </TouchableOpacity>
       </View>
@@ -32,12 +94,12 @@ export default function ProfileScreen({ navigation }) {
         <MenuItem
           icon="bar-chart"
           title="Моя статистика"
-          onPress={() => {}}
+          onPress={() => navigation.navigate('Statistics')} 
         />
         <MenuItem
           icon="trophy"
           title="Досягнення"
-          onPress={() => {}}
+          onPress={() => navigation.navigate('Achievements')} 
         />
       </View>
 
@@ -65,6 +127,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F9FAFB',
+  },
+  centerContent: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    flex: 1, // Важливо додати flex: 1 для центрування на весь екран
   },
   profileHeader: {
     backgroundColor: '#FFFFFF',

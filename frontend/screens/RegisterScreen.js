@@ -15,11 +15,12 @@ export default function RegisterScreen({ navigation }) {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
 
 
   const handleRegister = async () => {
     try {
-      const data = await authAPI.register(email, password, name, name);
+      const data = await authAPI.register(email, password, username, name);
       console.log('Успішна реєстрація:', data);
       navigation.replace('MainApp');
     } catch (error) {
@@ -48,6 +49,16 @@ export default function RegisterScreen({ navigation }) {
               value={name}
               onChangeText={setName}
               placeholder="Іван"
+            />
+          </View>
+
+          <View style={styles.inputContainer}>
+            <Text style={styles.label}>Ваш логін</Text>
+            <TextInput
+              style={styles.input}
+              value={username}
+              onChangeText={setUsername}
+              placeholder="username123"
             />
           </View>
 

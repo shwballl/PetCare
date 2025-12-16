@@ -37,6 +37,7 @@ export default function LoginScreen({ navigation }) {
           <Text style={styles.title}>Ласкаво просимо!</Text>
           <Text style={styles.subtitle}>Увійдіть, щоб продовжити</Text>
         </View>
+        
 
         <View style={styles.form}>
           <View style={styles.inputContainer}>

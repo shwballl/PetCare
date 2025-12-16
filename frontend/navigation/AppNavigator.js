@@ -11,6 +11,10 @@ import AddPetScreen from '../screens/AddPetScreen';
 import CommunityScreen from '../screens/CommunityScreen';
 import ProfileScreen from '../screens/ProfileScreen';
 import SettingsScreen from '../screens/SettingsScreen';
+import AddEventScreen from '../screens/AddEventScreen';
+import StatisticsScreen from '../screens/StatisticsScreen';
+import AchievementsScreen from '../screens/AchievementsScreen';
+import EditProfileScreen from '../screens/EditProfileScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -87,6 +91,18 @@ export default function AppNavigator() {
         name="Settings" 
         component={SettingsScreen}
         options={{ headerShown: true, title: 'Налаштування' }}
+      />
+      <Stack.Screen 
+        name="AddEvent" 
+        component={AddEventScreen} 
+        options={{ title: 'Додати подію' }} 
+      />
+      <Stack.Screen name="Statistics" component={StatisticsScreen} options={{ title: 'Статистика' }} />
+      <Stack.Screen name="Achievements" component={AchievementsScreen} options={{ title: 'Досягнення' }} />
+      <Stack.Screen 
+        name="EditProfile" 
+        component={EditProfileScreen} 
+        options={{ title: 'Редагувати профіль' }} 
       />
     </Stack.Navigator>
   );

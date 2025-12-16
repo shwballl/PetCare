@@ -15,12 +15,12 @@ export class UserCreateDto {
     readonly username: string;
 
     @IsString({ message: 'Name must be a string' })
-    @Length(6, 20, { message: 'Name must be between 6 and 20 characters' })
+    @Length(3, 20, { message: 'Name must be between 3 and 20 characters' })
     readonly name: string;
 
-    readonly pushNotifications: boolean;
+    readonly pushNotifications: boolean = true;
 
-    readonly emailNotifications: boolean;
+    readonly emailNotifications: boolean = true;
 }
 
 export class UserLoginDto {

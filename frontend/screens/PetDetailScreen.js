@@ -135,21 +135,24 @@ export default function PetDetailScreen({ route, navigation }) {
         <Text style={styles.name}>{pet.name}</Text>
         <Text style={styles.breed}>{pet.type}</Text>
         <Text style={styles.birthDate}>
-          Дата народження:{' '}
-          {new Date(pet.birthDate).toLocaleDateString('uk-UA')}
-        </Text>
+          Дата народження:{' '}
+          {pet.birthDate 
+            ? new Date(pet.birthDate).toLocaleDateString('uk-UA')
+            : 'Не вказано' 
+          }
+        </Text>
       </View>
 
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Планувальник</Text>
+          <Text style={styles.sectionTitle}> Планувальник </Text>
           <TouchableOpacity
-            onPress={() =>
-              navigation.navigate('AddEvent', { petId: pet.id })
-            }
-          >
-            <Ionicons name="add-circle" size={28} color="#2563EB" />
-          </TouchableOpacity>
+            onPress={() =>
+              navigation.navigate('AddEvent', { petId: pet.id })
+            }
+          >
+            <Ionicons name="add-circle" size={28} color="#2563EB" />
+          </TouchableOpacity>
         </View>
 
         {events.length === 0 ? (
@@ -180,45 +183,48 @@ export default function PetDetailScreen({ route, navigation }) {
 }
 
 function EventCard({ event, onDelete }) {
-  const getEventIcon = (name) => {
-    const lowerName = name.toLowerCase();
-    if (lowerName.includes('вакцин')) return 'medical';
-    if (lowerName.includes('ветеринар')) return 'heart';
-    if (lowerName.includes('стрижка')) return 'cut';
-    return 'calendar';
-  };
+  const getEventIcon = (name) => {
+    const lowerName = name.toLowerCase();
+    if (lowerName.includes('вакцин')) return 'medical';
+    if (lowerName.includes('ветеринар')) return 'heart';
+    if (lowerName.includes('стрижка')) return 'cut';
+    return 'calendar';
+  };
 
-  const formatDate = (date) => {
-    return new Date(date).toLocaleString('uk-UA', {
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-  };
+  const formatDate = (date) => {
+    return new Date(date).toLocaleString('uk-UA', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
 
-  return (
-    <View style={styles.eventCard}>
-      <View style={styles.eventIcon}>
-        <Ionicons
-          name={getEventIcon(event.name)}
-          size={24}
-          color="#2563EB"
-        />
-      </View>
-      <View style={styles.eventContent}>
-        <Text style={styles.eventTitle}>{event.name}</Text>
-        <Text style={styles.eventDate}>{formatDate(event.date)}</Text>
-        {event.details && (
-          <Text style={styles.eventDetails}>{event.details}</Text>
-        )}
-      </View>
-      <TouchableOpacity onPress={onDelete}>
-        <Ionicons name="trash-outline" size={20} color="#DC2626" />
-      </TouchableOpacity>
-    </View>
-  );
+  return (
+    <View style={styles.eventCard}>
+      <View style={styles.eventIcon}>
+        <Ionicons
+          name={getEventIcon(event.name)}
+          size={24}
+          color="#2563EB"
+        />
+      </View>
+      <View style={styles.eventContent}>
+        <Text style={styles.eventTitle}>{event.name}</Text>
+        <Text style={styles.eventDate}>{formatDate(event.date)}</Text>
+        
+        {/* 👇 ВИПРАВЛЕНО ТУТ: Використовуємо тернарний оператор або !! */}
+        {event.details ? (
+          <Text style={styles.eventDetails}>{event.details}</Text>
+        ) : null}
+
+      </View>
+      <TouchableOpacity onPress={onDelete}>
+        <Ionicons name="trash-outline" size={20} color="#DC2626" />
+      </TouchableOpacity>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

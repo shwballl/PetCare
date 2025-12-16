@@ -52,6 +52,9 @@ services:
       context: ./frontend
     depends_on:
       - backend
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
     environment:
       EXPO_PUBLIC_API_URL: http://backend:3000
       REACT_NATIVE_PACKAGER_HOSTNAME: ${REACT_NATIVE_PACKAGER_HOSTNAME}
