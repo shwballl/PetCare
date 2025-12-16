@@ -56,9 +56,11 @@ cd PetCare
 ```ini
 # Файл: .env
 # Налаштування бази даних
-POSTGRES_USER=petcare
-POSTGRES_PASSWORD=petcare
-POSTGRES_DB=petcare
+DB_HOST = localhost
+DB_NAME = nest
+DB_PORT = 5432
+DB_USER = postgres
+DB_PASSWORD = root
 
 # Секретний ключ для JWT-автентифікації
 JWT_SECRET=ваш_дуже_надійний_секретний_ключ
