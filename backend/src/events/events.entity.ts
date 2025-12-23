@@ -14,7 +14,7 @@ export class Event{
     @Column({default: false})
     checked: boolean;
     
-    @ManyToOne(() => Pet, pet => pet.events)
+    @ManyToOne(() => Pet, pet => pet.events, {onDelete: 'CASCADE'})
     @JoinColumn({ name: 'petId' })
     pet: Pet;
 

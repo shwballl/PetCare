@@ -3,12 +3,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Налаштування API
 // ⚠️ Переконайтеся, що IP-адреса правильна для вашої мережі
-const API_URL = 'http://192.168.1.107:3000'; 
-// const API_URL = 'https://your-backend.com'; // Для продакшну
+// Replace the hardcoded IP with this:
+const API_URL = process.env.EXPO_PUBLIC_API_URL || 'http://192.168.0.1:3000'; 
 
 const api = axios.create({
   baseURL: API_URL,
-  timeout: 10000,
+  timeout: 15000, // Increased slightly for tunnel stability
   headers: {
     'Content-Type': 'application/json',
   },

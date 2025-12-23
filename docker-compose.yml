@@ -50,25 +50,18 @@ services:
   frontend:
     build:
       context: ./frontend
-    depends_on:
-      - backend
-    dns:
-      - 8.8.8.8
-      - 1.1.1.1
-    environment:
-      EXPO_PUBLIC_API_URL: http://backend:3000
-      REACT_NATIVE_PACKAGER_HOSTNAME: ${REACT_NATIVE_PACKAGER_HOSTNAME}
+    stdin_open: true 
+    tty: true        
     ports:
       - "19000:19000"
       - "19001:19001"
       - "19002:19002"
       - "8081:8081"
-    networks:
-      - app-net
-    restart: unless-stopped
-    stdin_open: true
-    tty: true
-    command: ["npx", "expo", "start", "--lan"]
+    environment:
+      - EXPO_PUBLIC_API_URL=http://192.168.1.111:3000
+      - CI=0
+      - EXPO_USE_QR_CODE_FOR_TUNNEL=true
+    command: ["npx", "expo", "start", "--tunnel"]
 
 networks:
   app-net:

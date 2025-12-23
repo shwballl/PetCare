@@ -20,4 +20,4 @@ ENV EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0 \
     REACT_NATIVE_PACKAGER_HOSTNAME=0.0.0.0 \
     EXPO_NO_TELEMETRY=1
 
-CMD ["npx", "expo", "start", "--host", "0.0.0.0"]
+CMD ["npx", "expo", "start", "--tunnel"]
