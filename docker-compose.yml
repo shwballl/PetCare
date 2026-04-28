@@ -9,7 +9,7 @@ services:
       POSTGRES_USER: petcare
       POSTGRES_PASSWORD: petcare
     ports:
-      - "5432:5432" 
+      - "5432:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
     networks:
@@ -23,7 +23,7 @@ services:
   backend:
     build:
       context: ./backend
-      target: runner 
+      target: runner
     depends_on:
       db:
         condition: service_healthy
@@ -40,7 +40,9 @@ services:
       - "3000:3000"
     networks:
       - app-net
-    restart: unless-stopped 
+    volumes:
+      - ./backend/uploads:/app/uploads
+    restart: unless-stopped
     healthcheck:
       test: ["CMD", "node", "dist/main.js", "--help"]
       interval: 30s
@@ -50,16 +52,14 @@ services:
   frontend:
     build:
       context: ./frontend
-    stdin_open: true 
-    tty: true        
+    stdin_open: true
+    tty: true
     ports:
       - "19000:19000"
-      - "19001:19001"
-      - "19002:19002"
       - "8081:8081"
     environment:
-      - EXPO_PUBLIC_API_URL=http://192.168.1.111:3000
-      - CI=0
+      - REACT_NATIVE_PACKAGER_HOSTNAME=${REACT_NATIVE_PACKAGER_HOSTNAME}
+      - EXPO_PUBLIC_API_URL=http://${REACT_NATIVE_PACKAGER_HOSTNAME}:3000
       - EXPO_USE_QR_CODE_FOR_TUNNEL=true
     command: ["npx", "expo", "start", "--tunnel"]
 
@@ -70,4 +70,3 @@ networks:
 volumes:
   db-data:
     driver: local
-

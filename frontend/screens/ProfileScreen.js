@@ -1,16 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  ActivityIndicator, 
+  ActivityIndicator,
   Alert,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 // 👇 1. Додаємо userAPI до імпорту
-import { authAPI, userAPI } from '../services/api'; 
+import { authAPI, userAPI } from "../services/api";
 
 export default function ProfileScreen({ navigation }) {
   const [user, setUser] = useState(null);
@@ -18,8 +18,8 @@ export default function ProfileScreen({ navigation }) {
 
   // Додаємо підписку на подію 'focus' для оновлення даних
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      loadUserProfile(); 
+    const unsubscribe = navigation.addListener("focus", () => {
+      loadUserProfile();
     });
     loadUserProfile();
     return unsubscribe;
@@ -29,11 +29,11 @@ export default function ProfileScreen({ navigation }) {
     try {
       setLoading(true);
       // 👇 2. Використовуємо правильну функцію з userAPI
-      const userData = await userAPI.getProfile(); 
+      const userData = await userAPI.getProfile();
       setUser(userData);
     } catch (error) {
-      console.error('Помилка завантаження профілю:', error);
-      Alert.alert('Помилка', 'Не вдалося завантажити дані профілю');
+      console.error("Помилка завантаження профілю:", error);
+      Alert.alert("Помилка", "Не вдалося завантажити дані профілю");
     } finally {
       setLoading(false);
     }
@@ -41,9 +41,9 @@ export default function ProfileScreen({ navigation }) {
 
   const handleLogout = async () => {
     await authAPI.logout();
-    navigation.replace('Login');
+    navigation.replace("Login");
   };
-  
+
   if (loading) {
     return (
       <View style={[styles.container, styles.centerContent]}>
@@ -59,16 +59,21 @@ export default function ProfileScreen({ navigation }) {
       </View>
     );
   }
-  
+
   const formatJoinDate = (isoDate) => {
-    return new Date(isoDate).toLocaleDateString('uk-UA'); 
-  };
-  
-  const getAvatarLetter = (user) => {
-    const source = user.name || user.email || 'U';
-    return source[0].toUpperCase();
+    if (!isoDate) return "Дані відсутні";
+    const date = new Date(isoDate);
+    return date.toLocaleDateString("uk-UA", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
   };
 
+  const getAvatarLetter = (user) => {
+    const source = user.name || user.email || "U";
+    return source[0].toUpperCase();
+  };
 
   return (
     <ScrollView style={styles.container}>
@@ -80,11 +85,9 @@ export default function ProfileScreen({ navigation }) {
         <Text style={styles.joinDate}>
           Приєднався: {formatJoinDate(user.createdAt)}
         </Text>
-        <TouchableOpacity 
-          style={styles.editButton} 
-          onPress={() => 
-            navigation.navigate('EditProfile', { user: user })
-          }
+        <TouchableOpacity
+          style={styles.editButton}
+          onPress={() => navigation.navigate("EditProfile", { user: user })}
         >
           <Text style={styles.editButtonText}>Редагувати профіль</Text>
         </TouchableOpacity>
@@ -94,12 +97,12 @@ export default function ProfileScreen({ navigation }) {
         <MenuItem
           icon="bar-chart"
           title="Моя статистика"
-          onPress={() => navigation.navigate('Statistics')} 
+          onPress={() => navigation.navigate("Statistics")}
         />
         <MenuItem
           icon="trophy"
           title="Досягнення"
-          onPress={() => navigation.navigate('Achievements')} 
+          onPress={() => navigation.navigate("Achievements")}
         />
       </View>
 
@@ -126,98 +129,98 @@ function MenuItem({ icon, title, onPress }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: "#F9FAFB",
   },
   centerContent: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     flex: 1, // Важливо додати flex: 1 для центрування на весь екран
   },
   profileHeader: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     padding: 24,
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 16,
   },
   avatar: {
     width: 96,
     height: 96,
     borderRadius: 48,
-    backgroundColor: '#DBEAFE',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "#DBEAFE",
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: 16,
   },
   avatarText: {
     fontSize: 40,
-    fontWeight: 'bold',
-    color: '#1E40AF',
+    fontWeight: "bold",
+    color: "#1E40AF",
   },
   email: {
     fontSize: 20,
-    fontWeight: '600',
-    color: '#1F2937',
+    fontWeight: "600",
+    color: "#1F2937",
     marginBottom: 4,
   },
   joinDate: {
     fontSize: 14,
-    color: '#6B7280',
+    color: "#6B7280",
     marginBottom: 16,
   },
   editButton: {
-    backgroundColor: '#DBEAFE',
+    backgroundColor: "#DBEAFE",
     paddingVertical: 12,
     paddingHorizontal: 24,
     borderRadius: 8,
-    width: '100%',
-    alignItems: 'center',
+    width: "100%",
+    alignItems: "center",
   },
   editButtonText: {
-    color: '#1D4ED8',
+    color: "#1D4ED8",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   menuSection: {
     marginHorizontal: 16,
     marginBottom: 16,
   },
   menuItem: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backgroundColor: "#FFFFFF",
     padding: 16,
     borderRadius: 12,
     marginBottom: 8,
-    shadowColor: '#000',
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.1,
     shadowRadius: 2,
     elevation: 2,
   },
   menuItemLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   menuItemText: {
     fontSize: 16,
-    color: '#374151',
-    fontWeight: '500',
+    color: "#374151",
+    fontWeight: "500",
     marginLeft: 12,
   },
   logoutButton: {
-    flexDirection: 'row',
-    backgroundColor: '#FEF2F2',
+    flexDirection: "row",
+    backgroundColor: "#FEF2F2",
     margin: 16,
     padding: 16,
     borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   logoutText: {
-    color: '#DC2626',
+    color: "#DC2626",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     marginLeft: 8,
   },
 });

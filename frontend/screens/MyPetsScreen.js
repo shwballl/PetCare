@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -7,9 +7,12 @@ import {
   ScrollView,
   ActivityIndicator,
   Alert,
-} from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { petsAPI } from '../services/api';
+  Image,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { petsAPI } from "../services/api";
+
+const API_URL = process.env.EXPO_PUBLIC_API_URL || "http://192.168.1.108:3000";
 
 export default function MyPetsScreen({ navigation }) {
   const [pets, setPets] = useState([]);
@@ -19,7 +22,7 @@ export default function MyPetsScreen({ navigation }) {
     navigation.setOptions({
       headerRight: () => (
         <TouchableOpacity
-          onPress={() => navigation.navigate('Settings')}
+          onPress={() => navigation.navigate("Settings")}
           style={{ marginRight: 16 }}
         >
           <Ionicons name="settings-outline" size={24} color="#2563EB" />
@@ -34,7 +37,7 @@ export default function MyPetsScreen({ navigation }) {
 
   // Перезавантаження при поверненні на екран
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
+    const unsubscribe = navigation.addListener("focus", () => {
       loadPets();
     });
     return unsubscribe;
@@ -46,8 +49,8 @@ export default function MyPetsScreen({ navigation }) {
       const data = await petsAPI.getAllPets();
       setPets(data);
     } catch (error) {
-      console.error('Помилка завантаження:', error);
-      Alert.alert('Помилка', 'Не вдалося завантажити улюбленців');
+      console.error("Помилка завантаження:", error);
+      Alert.alert("Помилка", "Не вдалося завантажити улюбленців");
     } finally {
       setLoading(false);
     }
@@ -68,7 +71,7 @@ export default function MyPetsScreen({ navigation }) {
         <Text style={styles.title}>Мої Улюбленці</Text>
         <TouchableOpacity
           style={styles.addButton}
-          onPress={() => navigation.navigate('AddPet')}
+          onPress={() => navigation.navigate("AddPet")}
         >
           <Ionicons name="add" size={24} color="#FFFFFF" />
         </TouchableOpacity>
@@ -90,10 +93,9 @@ export default function MyPetsScreen({ navigation }) {
             name={pet.name}
             breed={pet.type}
             birthDate={pet.birthDate}
+            photoUrl={pet.photoUrl}
             color={getColorForPet(pet.id)}
-            onPress={() =>
-              navigation.navigate('PetDetail', { petId: pet.id })
-            }
+            onPress={() => navigation.navigate("PetDetail", { petId: pet.id })}
           />
         ))
       )}
@@ -104,38 +106,44 @@ export default function MyPetsScreen({ navigation }) {
 // Функція для генерації кольорів
 function getColorForPet(id) {
   const colors = [
-    '#E0F2FE',
-    '#FFFBEB',
-    '#F3E8FF',
-    '#ECFDF5',
-    '#FEF3C7',
-    '#DBEAFE',
+    "#E0F2FE",
+    "#FFFBEB",
+    "#F3E8FF",
+    "#ECFDF5",
+    "#FEF3C7",
+    "#DBEAFE",
   ];
   return colors[id % colors.length];
 }
 
-function PetCard({ id, name, breed, birthDate, color, onPress }) {
-  // Розрахунок віку
+function PetCard({ id, name, breed, birthDate, color, photoUrl, onPress }) {
   const calculateAge = (birthDate) => {
-    if (!birthDate) return 'Не вказано';
+    if (!birthDate) return "Не вказано";
     const birth = new Date(birthDate);
     const now = new Date();
     const years = now.getFullYear() - birth.getFullYear();
     const months = now.getMonth() - birth.getMonth();
-    
+
     if (years > 0) {
-      return `${years} ${years === 1 ? 'рік' : years < 5 ? 'роки' : 'років'}`;
+      return `${years} ${years === 1 ? "рік" : years < 5 ? "роки" : "років"}`;
     } else if (months > 0) {
-      return `${months} ${months === 1 ? 'місяць' : months < 5 ? 'місяці' : 'місяців'}`;
+      return `${months} ${months === 1 ? "місяць" : months < 5 ? "місяці" : "місяців"}`;
     } else {
-      return 'Менше місяця';
+      return "Менше місяця";
     }
   };
 
   return (
     <TouchableOpacity style={styles.card} onPress={onPress}>
       <View style={[styles.avatar, { backgroundColor: color }]}>
-        <Text style={styles.avatarText}>{name[0]}</Text>
+        {photoUrl ? (
+          <Image
+            source={{ uri: `${API_URL}${photoUrl}` }}
+            style={{ width: "100%", height: "100%", borderRadius: 32 }}
+          />
+        ) : (
+          <Text style={styles.avatarText}>{name ? name[0] : "?"}</Text>
+        )}
       </View>
       <View style={styles.cardContent}>
         <Text style={styles.petName}>{name}</Text>
@@ -155,63 +163,63 @@ function PetCard({ id, name, breed, birthDate, color, onPress }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F9FAFB',
+    backgroundColor: "#F9FAFB",
   },
   centerContent: {
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   loadingText: {
     marginTop: 12,
     fontSize: 16,
-    color: '#6B7280',
+    color: "#6B7280",
   },
   header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
     padding: 16,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#1F2937',
+    fontWeight: "bold",
+    color: "#1F2937",
   },
   addButton: {
-    backgroundColor: '#2563EB',
+    backgroundColor: "#2563EB",
     width: 48,
     height: 48,
     borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   emptyContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     paddingVertical: 64,
     paddingHorizontal: 32,
   },
   emptyText: {
     fontSize: 18,
-    fontWeight: '600',
-    color: '#1F2937',
+    fontWeight: "600",
+    color: "#1F2937",
     marginTop: 16,
   },
   emptySubtext: {
     fontSize: 14,
-    color: '#6B7280',
+    color: "#6B7280",
     marginTop: 8,
-    textAlign: 'center',
+    textAlign: "center",
   },
   card: {
-    flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
+    flexDirection: "row",
+    backgroundColor: "#FFFFFF",
     marginHorizontal: 16,
     marginBottom: 16,
     padding: 16,
     borderRadius: 12,
-    alignItems: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
@@ -221,40 +229,40 @@ const styles = StyleSheet.create({
     width: 64,
     height: 64,
     borderRadius: 32,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: 16,
   },
   avatarText: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#2563EB',
+    fontWeight: "bold",
+    color: "#2563EB",
   },
   cardContent: {
     flex: 1,
   },
   petName: {
     fontSize: 18,
-    fontWeight: '600',
-    color: '#1F2937',
+    fontWeight: "600",
+    color: "#1F2937",
   },
   petBreed: {
     fontSize: 14,
-    color: '#6B7280',
+    color: "#6B7280",
     marginTop: 4,
   },
   statusRow: {
-    flexDirection: 'row',
+    flexDirection: "row",
     marginTop: 8,
   },
   status: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginRight: 16,
   },
   statusText: {
     fontSize: 12,
-    color: '#6B7280',
+    color: "#6B7280",
     marginLeft: 4,
   },
 });

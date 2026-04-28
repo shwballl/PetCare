@@ -14,6 +14,12 @@ RUN npm run build
 # Keep only production deps for runtime
 RUN npm prune --omit=dev
 
+RUN mkdir -p /app/uploads
+
+RUN chown -R node:node /app/uploads
+
+RUN chmod -R 777 /app/uploads
+
 # Runtime image
 FROM node:20-alpine AS runner
 ENV NODE_ENV=production
